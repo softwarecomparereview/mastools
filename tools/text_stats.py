@@ -39,7 +39,7 @@ def analyse(text: str) -> dict:
 
     return {
         "characters": len(text),
-        "characters_no_spaces": len(text.replace(" ", "").replace("\n", "")),
+        "characters_no_spaces": sum(1 for c in text if not c.isspace()),
         "lines": len(lines),
         "non_blank_lines": sum(1 for l in lines if l.strip()),
         "words": len(words),
@@ -69,7 +69,7 @@ def print_stats(name: str, stats: dict) -> None:
     print(f"  Avg word length       : {stats['avg_word_length']:>10}")
     print(f"  Avg sentence length   : {stats['avg_sentence_length_words']:>10} words")
     if stats["top_words"]:
-        print(f"\n  Top 10 words:")
+        print("\n  Top 10 words:")
         for word, count in stats["top_words"]:
             print(f"    {word:<20} {count:>5}")
     print(sep)

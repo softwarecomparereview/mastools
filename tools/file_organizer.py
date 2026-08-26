@@ -87,19 +87,23 @@ def organize(source_dir: Path, by: str, dry_run: bool) -> None:
         if item.is_dir():
             continue  # skip sub-directories
 
-        folder_name = get_date_folder(item) if by == "date" else get_category(item)
-        dest_dir = source_dir / folder_name
-        dest = unique_dest(dest_dir / item.name)
+        try:
+            folder_name = get_date_folder(item) if by == "date" else get_category(item)
+            dest_dir = source_dir / folder_name
+            dest = unique_dest(dest_dir / item.name)
 
-        if dry_run:
-            print(f"[dry-run] Would move: {item.name}  →  {folder_name}/")
-        else:
-            dest_dir.mkdir(exist_ok=True)
-            shutil.move(str(item), str(dest))
-            print(f"Moved: {item.name}  →  {folder_name}/")
-        moved += 1
+            if dry_run:
+                print(f"[dry-run] Would move: {item.name}  →  {folder_name}/")
+            else:
+                dest_dir.mkdir(exist_ok=True)
+                shutil.move(str(item), str(dest))
+                print(f"Moved: {item.name}  →  {folder_name}/")
+            moved += 1
+        except OSError as exc:
+            print(f"Skipped '{item.name}': {exc}", file=sys.stderr)
+            skipped += 1
 
-    if moved == 0:
+    if moved == 0 and skipped == 0:
         print("No files to organize.")
     elif dry_run:
         print(f"\n{moved} file(s) would be moved (dry-run, nothing changed).")
